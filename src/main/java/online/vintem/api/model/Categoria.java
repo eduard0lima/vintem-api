@@ -1,6 +1,8 @@
 package online.vintem.api.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * Created by eduardo on 29/03/18.
@@ -13,6 +15,8 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long codigo;
 
+    @NotNull
+    @Size(min = 3, max = 20)
     private String nome;
 
     public Long getCodigo() {
@@ -43,6 +47,10 @@ public class Categoria {
 
     @Override
     public int hashCode() {
-        return codigo.hashCode();
+        if (codigo != null) {
+            return codigo.hashCode();
+        } else {
+            return 0;
+        }
     }
 }
