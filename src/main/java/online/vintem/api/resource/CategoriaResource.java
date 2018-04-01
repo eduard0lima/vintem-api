@@ -28,11 +28,10 @@ public class CategoriaResource {
     }
 
     @PostMapping
-    public ResponseEntity<Categoria> salvar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
+    public ResponseEntity<Categoria> salvar(@Valid @RequestBody Categoria categoria) {
         Categoria nova = categoriaRepository.save(categoria);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}").buildAndExpand(nova.getCodigo()).toUri();
-        //response.setHeader("Location", uri.toASCIIString());
 
         return ResponseEntity.created(uri).body(nova);
     }
