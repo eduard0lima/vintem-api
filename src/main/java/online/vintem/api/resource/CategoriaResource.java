@@ -1,15 +1,16 @@
 package online.vintem.api.resource;
 
+import online.vintem.api.event.RecursoCriadoEvent;
 import online.vintem.api.model.Categoria;
 import online.vintem.api.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -22,18 +23,19 @@ public class CategoriaResource {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
+    @Autowired
+    private ApplicationEventPublisher publisher;
+
     @GetMapping
     public List<Categoria> listar() {
         return categoriaRepository.findAll();
     }
 
     @PostMapping
-    public ResponseEntity<Categoria> salvar(@Valid @RequestBody Categoria categoria) {
+    public ResponseEntity<Categoria> salvar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
         Categoria nova = categoriaRepository.save(categoria);
-
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}").buildAndExpand(nova.getCodigo()).toUri();
-
-        return ResponseEntity.created(uri).body(nova);
+        publisher.publishEvent(new RecursoCriadoEvent(this, response, nova.getCodigo()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(nova);
     }
 
     @GetMapping("/{codigo}")

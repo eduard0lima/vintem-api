@@ -1,15 +1,16 @@
 package online.vintem.api.resource;
 
-import online.vintem.api.model.Categoria;
+import online.vintem.api.event.RecursoCriadoEvent;
 import online.vintem.api.model.Pessoa;
 import online.vintem.api.repository.PessoaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -22,18 +23,19 @@ public class PessoaResource {
     @Autowired
     private PessoaRepository pessoaRepository;
 
+    @Autowired
+    private ApplicationEventPublisher publisher;
+
     @GetMapping
     public List<Pessoa> listar() {
         return pessoaRepository.findAll();
     }
 
     @PostMapping
-    public ResponseEntity<Pessoa> salvar(@Valid @RequestBody Pessoa pessoa) {
+    public ResponseEntity<Pessoa> salvar(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
         Pessoa nova = pessoaRepository.save(pessoa);
-
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}").buildAndExpand(nova.getCodigo()).toUri();
-
-        return ResponseEntity.created(uri).body(nova);
+        publisher.publishEvent(new RecursoCriadoEvent(this, response, nova.getCodigo()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(nova);
     }
 
     @GetMapping("/{codigo}")
