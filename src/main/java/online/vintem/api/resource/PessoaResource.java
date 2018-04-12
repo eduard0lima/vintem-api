@@ -3,6 +3,7 @@ package online.vintem.api.resource;
 import online.vintem.api.event.RecursoCriadoEvent;
 import online.vintem.api.model.Pessoa;
 import online.vintem.api.repository.PessoaRepository;
+import online.vintem.api.service.PessoaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,9 @@ public class PessoaResource {
     @Autowired
     private ApplicationEventPublisher publisher;
 
+    @Autowired
+    private PessoaService pessoaService;
+
     @GetMapping
     public List<Pessoa> listar() {
         return pessoaRepository.findAll();
@@ -42,6 +46,24 @@ public class PessoaResource {
     public ResponseEntity<?> buscar(@PathVariable Long codigo) {
         Pessoa pessoa = pessoaRepository.findOne(codigo);
         return pessoa != null ? ResponseEntity.ok(pessoa) : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{codigo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remover(@PathVariable Long codigo) {
+        pessoaRepository.delete(codigo);
+    }
+
+    @PutMapping("/{codigo}")
+    public ResponseEntity<Pessoa> atualizar(@PathVariable Long codigo, @Valid @RequestBody Pessoa pessoa) {
+        Pessoa pessoaSalva = pessoaService.atualizar(codigo, pessoa);
+        return ResponseEntity.ok(pessoaSalva);
+    }
+
+    @PutMapping("/{codigo}/ativo")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void atualizarPropriedadeAtivo(@PathVariable Long codigo, @RequestBody Boolean ativo) {
+        pessoaService.atualizarPropriedadeAtivo(codigo, ativo);
     }
 
 }
