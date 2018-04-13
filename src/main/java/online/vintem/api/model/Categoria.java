@@ -42,15 +42,11 @@ public class Categoria {
 
         Categoria categoria = (Categoria) o;
 
-        return codigo.equals(categoria.codigo);
+        return codigo != null ? codigo.equals(categoria.codigo) : categoria.codigo == null;
     }
 
     @Override
     public int hashCode() {
-        if (codigo != null) {
-            return codigo.hashCode();
-        } else {
-            return 0;
-        }
+        return codigo != null ? codigo.hashCode() : 0;
     }
 }

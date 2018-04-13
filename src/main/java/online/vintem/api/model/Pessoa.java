@@ -54,4 +54,19 @@ public class Pessoa {
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Pessoa pessoa = (Pessoa) o;
+
+        return codigo != null ? codigo.equals(pessoa.codigo) : pessoa.codigo == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return codigo != null ? codigo.hashCode() : 0;
+    }
 }
