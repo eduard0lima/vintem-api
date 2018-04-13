@@ -4,6 +4,7 @@ import online.vintem.api.event.RecursoCriadoEvent;
 import online.vintem.api.exceptionhandler.VintemExceptionHandler;
 import online.vintem.api.model.Lancamento;
 import online.vintem.api.repository.LancamentoRepository;
+import online.vintem.api.repository.filter.LancamentoFilter;
 import online.vintem.api.service.LancamentoService;
 import online.vintem.api.service.exception.PessoaInexistenteOuInativaException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +40,8 @@ public class LancamentoResource {
     private MessageSource messageSource;
 
     @GetMapping
-    public List<Lancamento> listar() {
-        return lancamentoRepository.findAll();
+    public List<Lancamento> pesquisar(LancamentoFilter lancamentoFilter) {
+        return lancamentoRepository.filtrar(lancamentoFilter);
     }
 
     @GetMapping("/{codigo}")
