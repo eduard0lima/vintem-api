@@ -50,6 +50,13 @@ public class LancamentoResource {
         return lancamento != null ? ResponseEntity.ok(lancamento) : ResponseEntity.notFound().build();
     }
 
+    @DeleteMapping("/{codigo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remover(@PathVariable Long codigo) {
+        lancamentoRepository.delete(codigo);
+    }
+
+
     @PostMapping
     public ResponseEntity<Lancamento> salvar(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response) {
         Lancamento novo = lancamentoService.salvar(lancamento);
@@ -64,5 +71,6 @@ public class LancamentoResource {
         List<VintemExceptionHandler.Erro> erros = Arrays.asList(new VintemExceptionHandler.Erro(mensagemUsuario, mensagemDesenvolvedor));
         return ResponseEntity.badRequest().body(erros);
     }
+
 }
 
