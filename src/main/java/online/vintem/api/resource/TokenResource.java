@@ -1,9 +1,12 @@
 package online.vintem.api.resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import online.vintem.api.config.property.VintemApiProperty;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -16,11 +19,14 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/tokens")
 public class TokenResource {
 
+    @Autowired
+    private VintemApiProperty vintemApiProperty;
+	
     @DeleteMapping("revoke")
     public void revoke(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); // TODO: mudar para true em produção
+        cookie.setSecure(vintemApiProperty.getSeguranca().isEnableHttps());
         cookie.setPath(request.getContextPath() + "/oauth/token");
         cookie.setMaxAge(0);
 

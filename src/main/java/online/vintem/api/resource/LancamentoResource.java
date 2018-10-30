@@ -5,6 +5,7 @@ import online.vintem.api.exceptionhandler.VintemExceptionHandler;
 import online.vintem.api.model.Lancamento;
 import online.vintem.api.repository.LancamentoRepository;
 import online.vintem.api.repository.filter.LancamentoFilter;
+import online.vintem.api.repository.projection.ResumoLancamento;
 import online.vintem.api.service.LancamentoService;
 import online.vintem.api.service.exception.PessoaInexistenteOuInativaException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,12 @@ public class LancamentoResource {
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')")
     public Page<Lancamento> pesquisar(LancamentoFilter lancamentoFilter, Pageable pageable) {
         return lancamentoRepository.filtrar(lancamentoFilter, pageable);
+    }
+    
+    @GetMapping(params = "resumo")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')")
+    public Page<ResumoLancamento> resumir(LancamentoFilter lancamentoFilter, Pageable pageable) {
+        return lancamentoRepository.resumir(lancamentoFilter, pageable);
     }
 
     @GetMapping("/{codigo}")

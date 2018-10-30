@@ -1,5 +1,6 @@
 package online.vintem.api.token;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -12,6 +13,8 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import online.vintem.api.config.property.VintemApiProperty;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 @ControllerAdvice
 public class RefreshTokenPostProcessor implements ResponseBodyAdvice<OAuth2AccessToken> {
 
+    @Autowired
+    private VintemApiProperty vintemApiProperty;
+	
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         return returnType.getMethod().getName().equals("postAccessToken");
@@ -49,7 +55,7 @@ public class RefreshTokenPostProcessor implements ResponseBodyAdvice<OAuth2Acces
     private void adicionarRefreshTokenNoCookie(String refreshToken, HttpServletRequest req, HttpServletResponse res) {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); // TODO: mudar para true em produção
+        cookie.setSecure(vintemApiProperty.getSeguranca().isEnableHttps());
         cookie.setPath(req.getContextPath() + "/oauth/token");
         cookie.setMaxAge(2592000);
         res.addCookie(cookie);
